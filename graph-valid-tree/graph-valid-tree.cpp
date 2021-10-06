@@ -1,24 +1,37 @@
 class Solution {
 public:
+    // find the root of a given node optimized with path compression
+    int find(int i, vector<int>& parent) {
+        while (parent[i] != i) {
+            /*
+            below is the same as: parent[i] = parent[parent[i]]; i = parent[i];
+            */
+            i = parent[i] = parent[parent[i]];
+        }
+        return i;
+    }
+    
     bool validTree(int n, vector<vector<int>>& edges) {
+        // 1. check for cycles
+        // 2. check every node is connected
         if (edges.size() != n - 1) return false;
-        vector<int> nodes(n, 0);
-        for (int i = 0; i < n; i++) {
-            nodes[i] = i;
-        }
-        for (int i = 0; i < edges.size(); i++) {
-            int first = edges[i][0];
-            int second = edges[i][1];
-            while (nodes[first] != first) {
-                first = nodes[first];
+        vector<int> parent(n);
+        vector<int> size(n, 1);
+        iota(parent.begin(), parent.end(), 0);
+        for (auto &edge: edges) {
+            int rootA = find(edge[0], parent);
+            int rootB = find(edge[1], parent);
+            if (rootA == rootB) return false;               // if rootA==rootB there is a cycle
+            if (size[rootA] > size[rootB]) {
+                parent[rootA] = rootB;
+                size[rootB] += size[rootA];
             }
-            while (nodes[second] != second) {
-                second = nodes[second];
+            else {
+                parent[rootB] = rootA;
+                size[rootA] += size[rootB];
             }
-            if (first == second) return false;
-            nodes[second] = first;
+            n--;
         }
-        return true;
-        
+        return (n == 1);                                   // return true if there is one component
     }
 };
