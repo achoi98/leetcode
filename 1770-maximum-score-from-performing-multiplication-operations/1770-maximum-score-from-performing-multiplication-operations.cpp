@@ -16,7 +16,7 @@ public:
     int maximumScore(vector<int>& nums, vector<int>& multipliers) {
         int m = multipliers.size();
         int n = nums.size();
-        vector<vector<int>> memo(m + 1, vector<int> (m + 1, 0));
+        vector<vector<int>> memo(m, vector<int> (m, 0));
         
         
         return dp(0, 0, m, n, nums, multipliers, memo);
